@@ -20,9 +20,9 @@ aws_secret_access_key = os.environ.get('AWS_SECRET_KEY')
 aws_log_key = os.environ.get('AWS_LOG_ACCESS_KEY')
 aws_log_secret = os.environ.get('AWS_LOG_SECRET_KEY')
 user_bucket = os.environ.get('USER_BUCKET_NAME')
-audio_file_path = './files/downloads/'
-transcription_file_path = './files/processed-files/'
-default_questions_file_path = './files/processed-files/default-questions/'
+audio_file_path = './files/downloads/adhoc-files/'  #local path to audio file adhoc folder
+transcription_file_path = './files/processed-files/adhoc-files/'    #local path to transcription file adhoc folder
+default_questions_file_path = './files/processed-files/default-questions/adhoc-files/'  #local path to default questions adhoc folder
 
 #authenticate S3 client with your user credentials that are stored in your .env config file
 s3client = boto3.client('s3',
@@ -62,6 +62,17 @@ def download_latest_audio_file(ti):
     ti.xcom_push(key="transcribed_file_name", value=transcribed_file_name)  #push transcirbed file name for current file to xcom, to use in the next task in DAG
     ti.xcom_push(key="transcription_file_path", value=transcription_file_path)  #push transcribed file path for current file to xcom, to use in the next task in DAG
 
+    clientLogs.put_log_events(      #logging to AWS CloudWatch logs
+            logGroupName = "assignment-04",
+            logStreamName = "airflow",
+            logEvents = [
+                {
+                'timestamp' : int(time.time() * 1e3),
+                'message' : "Airflow adhoc DAG: Task 1 (download files from S3 bucket) executed"
+                }
+            ]
+    )
+
 def transcribe_audio_file(ti):
 
     """Function for Airflow DAG to transcribe audio file from local folder leveraging OpenAI's Whisper API for speech to text
@@ -91,6 +102,17 @@ def transcribe_audio_file(ti):
     with open(transcription_file_path, 'w') as f:
         f.write(transcription)
 
+    clientLogs.put_log_events(      #logging to AWS CloudWatch logs
+            logGroupName = "assignment-04",
+            logStreamName = "airflow",
+            logEvents = [
+                {
+                'timestamp' : int(time.time() * 1e3),
+                'message' : "Airflow adhoc DAG: Task 2 (transcribe audio files) executed"
+                }
+            ]
+    )
+
 def upload_transcribed_text_file_to_s3(ti):
 
     """Function for Airflow DAG to upload the transcribed .txt file to S3 bucket's processed-text folder. This function pulls 
@@ -105,8 +127,19 @@ def upload_transcribed_text_file_to_s3(ti):
 
     transcribed_file_name = ti.xcom_pull(key="transcribed_file_name", task_ids="task_get_audio_file")   #fetch the transcribed file name through xcom using task id of first task
     transcription_file_path = ti.xcom_pull(key="transcription_file_path", task_ids="task_get_audio_file")   #fetch the transcribed file path through xcom using task id of first task
-    s3_file_path = 'processed-text-folder/' + transcribed_file_name #defined path of S3 folder
+    s3_file_path = 'processed-text-folder/adhoc-files/' + transcribed_file_name #defined path of S3 folder
     s3client.put_object(Body=open(transcription_file_path, 'rb'), Bucket=user_bucket, Key=s3_file_path) #upload the file to the S3 bucket folder
+
+    clientLogs.put_log_events(      #logging to AWS CloudWatch logs
+            logGroupName = "assignment-04",
+            logStreamName = "airflow",
+            logEvents = [
+                {
+                'timestamp' : int(time.time() * 1e3),
+                'message' : "Airflow adhoc DAG: Task 3 (upload audio transcription to S3 bucket) executed"
+                }
+            ]
+    )
 
 def answer_default_questions(ti):
 
@@ -114,9 +147,9 @@ def answer_default_questions(ti):
     .txt file that is locally stored in the previous task. After reading the text from the transcribed file it calls OpenAI's
     ChatGPT API to answer the 4 general questions. The responses to each of these questions provided by the ChatGPT API are
     stored in a new text file inside. This new text file contains each of the 4 question prompts and their recieved answers.
-    This txt file is then transferred to S3 bucket's processed-text-folder/default-questions folder. This file will be later
-    used as a context when the user wants to each new questions about a meeting. This function pulls variables from 
-    Airflow's xcom that were pushed by a previous task using its task id.
+    This txt file is then transferred to S3 bucket's processed-text-folder/default-questions/adhoc-files/ folder. This file 
+    will be later used as a context when the user wants to each new questions about a meeting. This function pulls variables 
+    from Airflow's xcom that were pushed by a previous task using its task id.
     -----
     Input parameters:
     ti - to enable interacting with xcom in airflow
@@ -133,12 +166,13 @@ def answer_default_questions(ti):
     #read the transcription got from OpenAI's Whisper API which was stored in a .txt file 
     with open(transcription_file_path, 'r') as f:
         text = f.read()
-        text = text.split("\n")[:-1]
+        text = text.split("\n")[:-1]    #remove the new line character at the end of the txt file
+        text = text[0]  #select only the string of the text from text list obtained
 
         #system prompt to the ChapGPT model
         system_prompt = "You are meeting intelligence tool which helps provide answers to the meeting transcript provided to you. You will help answer questions as concisely as possible"
         #defining prompts for each of the 4 general questions
-        question1 = f"Here is the meeting text:{text}. Summarise this meeting"  #the context with the entire meeting's transcribed text is only contained in the first prompt
+        question1 = f"Here is the meeting text:{text}\nSummarise this meeting"  #the context with the entire meeting's transcribed text is only contained in the first prompt
         question2 = "How many people were talking in this meeting and what were their names?"   #general question 2
         question3 = "Is this meeting a generic discussion or focused on a specific project?"    #general question 3
         question4 = "What were the topics discussed during this meeting?"   #general question 4
@@ -191,6 +225,7 @@ def answer_default_questions(ti):
                                             frequency_penalty=0,
                                             presence_penalty=0)
 
+        #store each of the responses from ChapGPT as strings
         response_1 = response1.choices[0].message.content.strip()
         response_2 = response2.choices[0].message.content.strip()
         response_3 = response3.choices[0].message.content.strip()
@@ -202,16 +237,26 @@ def answer_default_questions(ti):
         f.write(question1+"\n"+response_1+"\n"+question2+"\n"+response_2+"\n"+question3+"\n"+response_3+"\n"+question4+"\n"+response_4+"\n")
 
     #finally store this chat type file with the answers to the default questions into the S3 bucket
-    s3_file_path = 'processed-text-folder/default-questions/default_questions_' + transcribed_file_name #defined path of S3 folder
+    s3_file_path = 'processed-text-folder/default-questions/adhoc-files/default_questions_' + transcribed_file_name #defined path of S3 folder
     s3client.put_object(Body=open(default_questions_file_path, 'rb'), Bucket=user_bucket, Key=s3_file_path) #upload the file to the S3 bucket folder
+
+    clientLogs.put_log_events(      #logging to AWS CloudWatch logs
+            logGroupName = "assignment-04",
+            logStreamName = "airflow",
+            logEvents = [
+                {
+                'timestamp' : int(time.time() * 1e3),
+                'message' : "Airflow adhoc DAG: Task 4 (answer default questions) executed"
+                }
+            ]
+    )
 
 #defining the DAG
 with DAG(
-    dag_id="adhoc-dag_v2",
-    #schedule="0 0 * * *",   #run daily - at midnight
+    dag_id="adhoc-dag_v3",
     start_date=days_ago(0),
     catchup=False,
-    tags=["damg7245", "meeting-intelligence-tools", "working"],
+    tags=["damg7245", "meeting-intelligence-tools", "adhoc-process", "working"],
 ) as dag:
 
     download_latest_audio_file = PythonOperator(
