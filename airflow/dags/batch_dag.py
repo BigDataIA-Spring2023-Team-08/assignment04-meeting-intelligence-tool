@@ -10,7 +10,6 @@ import os
 from pydotenvs import load_env
 import boto3
 import openai
-from pathlib import Path
 
 #load local environment
 load_env()
@@ -232,7 +231,7 @@ def answer_default_questions():
             f.write(question1+"\n"+response_1+"\n"+question2+"\n"+response_2+"\n"+question3+"\n"+response_3+"\n"+question4+"\n"+response_4+"\n")
         
         #finally store this chat type file with the answers to the default questions into the S3 bucket
-        s3_file_path = 'processed-text-folder/default-questions/batch-files/default_questions_' + transcription_file_path.split('/')[3] #defined path of S3 folder
+        s3_file_path = 'processed-text-folder/default-questions/batch-files/' + transcription_file_path.split('/')[3] #defined path of S3 folder
         s3resource.meta.client.upload_file(default_questions_file_path, user_bucket, s3_file_path)  #upload the file to the S3 bucket folder
 
     clientLogs.put_log_events(      #logging to AWS CloudWatch logs
