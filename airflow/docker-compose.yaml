@@ -63,12 +63,12 @@ x-airflow-common:
     _PIP_ADDITIONAL_REQUIREMENTS: ${_PIP_ADDITIONAL_REQUIREMENTS:-}
     #######
     #the following are user defined environment variables/secrets, please replace the XXXXXX with your secret/key
-    AWS_ACCESS_KEY: 'XXXXX'
-    AWS_SECRET_KEY: 'XXXXX'
-    AWS_LOG_ACCESS_KEY: 'XXXXX'
-    AWS_LOG_SECRET_KEY: 'XXXXX'
+    AWS_ACCESS_KEY: 'XXXXXX'
+    AWS_SECRET_KEY: 'XXXXXX'
+    AWS_LOG_ACCESS_KEY: 'XXXXXX'
+    AWS_LOG_SECRET_KEY: 'XXXXXX'
     USER_BUCKET_NAME: 'meeting-intelligence-tool'
-    OPENAI_KEY: 'XXXXX'
+    OPENAI_KEY: 'XXXXXX'
   volumes:
     - ${AIRFLOW_PROJ_DIR:-.}/dags:/opt/airflow/dags
     - ${AIRFLOW_PROJ_DIR:-.}/logs:/opt/airflow/logs
