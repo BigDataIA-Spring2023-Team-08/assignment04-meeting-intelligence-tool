@@ -237,7 +237,7 @@ def answer_default_questions(ti):
         f.write(question1+"\n"+response_1+"\n"+question2+"\n"+response_2+"\n"+question3+"\n"+response_3+"\n"+question4+"\n"+response_4+"\n")
 
     #finally store this chat type file with the answers to the default questions into the S3 bucket
-    s3_file_path = 'processed-text-folder/default-questions/adhoc-files/default_questions_' + transcribed_file_name #defined path of S3 folder
+    s3_file_path = 'processed-text-folder/default-questions/adhoc-files/' + transcribed_file_name #defined path of S3 folder
     s3client.put_object(Body=open(default_questions_file_path, 'rb'), Bucket=user_bucket, Key=s3_file_path) #upload the file to the S3 bucket folder
 
     clientLogs.put_log_events(      #logging to AWS CloudWatch logs
