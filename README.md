@@ -45,8 +45,7 @@ The 4 general questions asked for each meeting are:
 4. What were the topics discussed during this meeting?
 
 ## Architecture Diagram
-
-
+![Architecture](https://github.com/BigDataIA-Spring2023-Team-08/assignment04-meeting-intelligence-tool/blob/main/architecture%20diagram/whisper_and_chat_api_architecture.png?raw=true)
 ## Project Components
 
 ### APIs
@@ -93,15 +92,15 @@ Airflow is an open-source platform for data orchestration, through which data wo
 
 1. Clone the repo to get all the source code on your machine
 
-2. Within the airflow folder, create a `.env` file with just the following line: 
+2. Within the [airflow folder](https://github.com/BigDataIA-Spring2023-Team-08/assignment04-meeting-intelligence-tool/tree/main/airflow), create a `.env` file with just the following line: 
 
         AIRFLOW_UID=1001
         
 Note: no need to add your credentials in this .env file since the credentials for the airflow app are to be added as said in the next point
 
-3. Edit lines 66-71 in the `docker-compose.yml` found within the airflow folder to add your API keys
+3. Edit lines 66-71 in the [`docker-compose.yml`](https://github.com/BigDataIA-Spring2023-Team-08/assignment04-meeting-intelligence-tool/blob/main/airflow/docker-compose.yaml) found within the airflow folder to add your API keys
 
-4. Once done, create a virtual environment and install all requirements from the `requirements.txt` file present
+4. Once done, create a virtual environment and install all requirements from the [`requirements.txt`](https://github.com/BigDataIA-Spring2023-Team-08/assignment04-meeting-intelligence-tool/blob/main/airflow/requirements.txt) file present
 
 5. Finally, execute following line to get airflow running: 
 
@@ -109,7 +108,7 @@ Note: no need to add your credentials in this .env file since the credentials fo
 
 Lets us get the streamlit frontend running now:
 
-6. Within the streamlit-app folder, create a `.env` file with following variables and your key: 
+6. Within the [streamlit-app folder](https://github.com/BigDataIA-Spring2023-Team-08/assignment04-meeting-intelligence-tool/tree/main/streamlit-app), create a `.env` file with following variables and your key: 
 
         ACCESS_KEY=yourkey
         AWS_SECRET_KEY=yourkey
@@ -119,7 +118,7 @@ Lets us get the streamlit frontend running now:
 
 Note: airflow URL should be the URL you just got after doing docker compose up
 
-7. Once done, create a virtual environment and install all requirements from the `requirements.txt` file present 
+7. Once done, create a virtual environment and install all requirements from the [`requirements.txt`](https://github.com/BigDataIA-Spring2023-Team-08/assignment04-meeting-intelligence-tool/blob/main/streamlit-app/requirements.txt) file present 
 
 8. Finally, execute following line to get streamlit running: 
 
