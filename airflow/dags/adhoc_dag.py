@@ -184,7 +184,7 @@ def answer_default_questions(ti):
                                                 {"role": "user", "content": question1}
                                             ],
                                             temperature=0.7,
-                                            max_tokens=200,
+                                            max_tokens=500,
                                             top_p=1,
                                             frequency_penalty=0,
                                             presence_penalty=0)
@@ -208,7 +208,7 @@ def answer_default_questions(ti):
                                                 {"role": "user", "content": f"Here is the meeting text:{text}. {question3}"}
                                             ],
                                             temperature=0.7,
-                                            max_tokens=100,
+                                            max_tokens=200,
                                             top_p=1,
                                             frequency_penalty=0,
                                             presence_penalty=0)
@@ -220,7 +220,7 @@ def answer_default_questions(ti):
                                                 {"role": "user", "content": f"Here is the meeting text:{text}. {question4}"}
                                             ],
                                             temperature=0.7,
-                                            max_tokens=200,
+                                            max_tokens=500,
                                             top_p=1,
                                             frequency_penalty=0,
                                             presence_penalty=0)
