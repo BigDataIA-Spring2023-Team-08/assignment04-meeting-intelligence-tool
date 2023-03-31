@@ -1,4 +1,4 @@
-# Assignment 04: Meeting Intelligence Application [EchoNotes]
+# EchoNotes: A Meeting Intelligence Application
 
 ![Webinar-pana](https://user-images.githubusercontent.com/46862684/229015820-c303a49e-dd60-4381-a77a-165e0f9aa562.svg)
 
@@ -8,19 +8,20 @@
 > [🚀 Application link](http://34.73.90.193:8082) <br>
 > [⏱ Airflow](http://34.73.90.193:8081) <br>
 > [🎬 Codelab Slides](https://codelabs-preview.appspot.com/?file_id=10g_VR_sg49wRqfq8tMtr2pbBg80EHSgA2Rqd8R1MaiI#0) <br>
-> 🐳 Docker Hub Images: [Airflow](https://hub.docker.com/repository/docker/mashruwalav/echonotes_airflow_v2/general), [Streamlit](https://hub.docker.com/repository/docker/mashruwalav/echonotes_streamlitapp_v2/general)
+> 🐳 Docker Hub Images: [Airflow](https://hub.docker.com/repository/docker/mashruwalav/echonotes_airflow_v2/general), [Streamlit](https://hub.docker.com/repository/docker/mashruwalav/echonotes_streamlitapp_v2/general) <br>
+> [📽️ Application Demo/Presentation](tba)
 
 ----- 
 
 ## Index
-  - [Objective](#objective)
+  - [Objective 🎯](#objective)
   - [Abstract 📝](#abstract)
-  - [Architecture Diagram](#architecture-diagram)
+  - [Architecture Diagram 🏗](#architecture-diagram)
   - [Project Components 💽](#project-components)
     - [APIs](#apis)
     - [Streamlit](#streamlit)
     - [Airflow](#airflow)
-  
+  - [How to run the application 💻](#how-to-run-the-application-locally)
 ----- 
 
 ## Objective
@@ -42,6 +43,8 @@ The 4 general questions asked for each meeting are:
 2. How many speakers were there?
 3. Is this meeting a generic discussion or focused on a specific project?
 4. What were the topics discussed during this meeting?
+
+## Architecture Diagram
 
 
 ## Project Components
@@ -84,6 +87,45 @@ Airflow is an open-source platform for data orchestration, through which data wo
 > `Task 3`: Transcripts are written in `Processed` folder inside S3 bucket
 
 > `Task 4`: ChatGPT API is called for querying questions
+
+
+## How to run the application locally
+
+1. Clone the repo to get all the source code on your machine
+
+2. Within the airflow folder, create a `.env` file with just the following line: 
+
+        AIRFLOW_UID=1001
+        
+Note: no need to add your credentials in this .env file since the credentials for the airflow app are to be added as said in the next point
+
+3. Edit lines 66-71 in the `docker-compose.yml` found within the airflow folder to add your API keys
+
+4. Once done, create a virtual environment and install all requirements from the `requirements.txt` file present
+
+5. Finally, execute following line to get airflow running: 
+
+        docker compose up
+
+Lets us get the streamlit frontend running now:
+
+6. Within the streamlit-app folder, create a `.env` file with following variables and your key: 
+
+        ACCESS_KEY=yourkey
+        AWS_SECRET_KEY=yourkey
+        USER_BUCKET_NAME=meeting-intelligence-tool
+        OPENAI_KEY=yourkey
+        AIRFLOW_URL=http://34.73.90.193:8081/
+
+Note: airflow URL should be the URL you just got after doing docker compose up
+
+7. Once done, create a virtual environment and install all requirements from the `requirements.txt` file present 
+
+8. Finally, execute following line to get streamlit running: 
+
+        docker compose up
+
+9. Access application through the port you just opened by running docker compose up for Streamlit
 
 -----
 > WE ATTEST THAT WE HAVEN’T USED ANY OTHER STUDENTS’ WORK IN OUR ASSIGNMENT AND ABIDE BY THE POLICIES LISTED IN THE STUDENT HANDBOOK.
