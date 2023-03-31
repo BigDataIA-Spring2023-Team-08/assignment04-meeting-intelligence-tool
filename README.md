@@ -27,6 +27,7 @@
 ## Objective
 Build a Meeting Intelligence tool using generative AI APIs such as **Whisper** and **GPT 3.5** APIs, integrated with [Streamlit](https://streamlit.iohttps://streamlit.io) for its user interface to illustrate application workflow illustration as well as [Airflow](https://airflow.apache.org/docs/) for automation.
 
+
 ## Abstract
 The task involves building a decoupled architecture for the meeting intelligence application:
 
@@ -44,8 +45,11 @@ The 4 general questions asked for each meeting are:
 3. Is this meeting a generic discussion or focused on a specific project?
 4. What were the topics discussed during this meeting?
 
+
 ## Architecture Diagram
 ![Architecture](https://github.com/BigDataIA-Spring2023-Team-08/assignment04-meeting-intelligence-tool/blob/main/architecture%20diagram/whisper_and_chat_api_architecture.png?raw=true)
+
+
 ## Project Components
 
 ### APIs
@@ -86,6 +90,7 @@ Airflow is an open-source platform for data orchestration, through which data wo
 > `Task 3`: Transcripts are written in `Processed` folder inside S3 bucket
 
 > `Task 4`: ChatGPT API is called for querying questions
+
 
 
 ## How to run the application locally
