@@ -177,7 +177,7 @@ def answer_default_questions():
                                                     {"role": "user", "content": question1}
                                                 ],
                                                 temperature=0.7,
-                                                max_tokens=200,
+                                                max_tokens=500,
                                                 top_p=1,
                                                 frequency_penalty=0,
                                                 presence_penalty=0)
@@ -201,7 +201,7 @@ def answer_default_questions():
                                                     {"role": "user", "content": f"Here is the meeting text:{text}. {question3}"}
                                                 ],
                                                 temperature=0.7,
-                                                max_tokens=100,
+                                                max_tokens=200,
                                                 top_p=1,
                                                 frequency_penalty=0,
                                                 presence_penalty=0)
@@ -213,7 +213,7 @@ def answer_default_questions():
                                                     {"role": "user", "content": f"Here is the meeting text:{text}. {question4}"}
                                                 ],
                                                 temperature=0.7,
-                                                max_tokens=200,
+                                                max_tokens=500,
                                                 top_p=1,
                                                 frequency_penalty=0,
                                                 presence_penalty=0)
@@ -248,7 +248,7 @@ def answer_default_questions():
 #defining the DAG
 with DAG(
     dag_id="batch-dag_v3",
-    #schedule="0 0 * * *",   #run daily - at midnight
+    schedule="0 0 * * *",   #run daily - at midnight
     start_date=days_ago(0),
     catchup=False,
     tags=["damg7245", "meeting-intelligence-tools", "batch-process", "working"],
