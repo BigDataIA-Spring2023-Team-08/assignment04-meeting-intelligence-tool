@@ -8,7 +8,7 @@
 > [🚀 Application link](http://34.73.90.193:8082) <br>
 > [⏱ Airflow](http://34.73.90.193:8081) <br>
 > [🎬 Codelab Slides](https://codelabs-preview.appspot.com/?file_id=10g_VR_sg49wRqfq8tMtr2pbBg80EHSgA2Rqd8R1MaiI#0) <br>
-> 🐳 Docker Hub Images: 
+> 🐳 Docker Hub Images: [Airflow](https://hub.docker.com/repository/docker/mashruwalav/echonotes_airflow_v2/general), [Streamlit](https://hub.docker.com/repository/docker/mashruwalav/echonotes_streamlitapp_v2/general)
 
 ----- 
 
@@ -25,6 +25,24 @@
 
 ## Objective
 Build a Meeting Intelligence tool using generative AI APIs such as **Whisper** and **GPT 3.5** APIs, integrated with [Streamlit](https://streamlit.iohttps://streamlit.io) for its user interface to illustrate application workflow illustration as well as [Airflow](https://airflow.apache.org/docs/) for automation.
+
+## Abstract
+The task involves building a decoupled architecture for the meeting intelligence application:
+
+- View meeting insights such a summaries, quick conclusions etc about a meeting without having to listen to the entire meeting audio
+- Use the audio file and provide it to OpenAI’s Whisper API to transcribe this audio file. The transcription is stored on a S3 bucket
+- Use the transcription file to call GPT 3.5 API to answer 4 general questions about the meeting. This answer & questionnaire file is then stored into S3
+- Give the user details about these general questions & provide option for users to ask any additional questions. When a user asks any new question, the GPT 3.5 API is called again
+- Access the application through Streamlit which pulls a Docker image of the application
+- Backend processes are handled through Airflow which again uses a Docker image of the Airflow instance
+
+The 4 general questions asked for each meeting are: 
+
+1. Provide meeting summary
+2. How many speakers were there?
+3. Is this meeting a generic discussion or focused on a specific project?
+4. What were the topics discussed during this meeting?
+
 
 ## Project Components
 
