@@ -40,9 +40,9 @@ with Diagram("Whisper and Chat API Architecture", show=False, direction = "LR"):
             streamlit_app = Custom("Streamlit", "./streamlit-icon.png")
 
         with Cluster("API"):
-            with Cluster("Docker"):
-                whisper_api_docker = Docker("Whisper API")
-                chat_api_docker = Docker("Chat API")
+            # with Cluster("Docker"):
+            #     whisper_api_docker = Docker("Whisper API")
+            #     chat_api_docker = Docker("Chat API")
             whisper_api = Custom("Whisper API", "./whisper-icon.png")
             chat_api = Custom("Chat API", "./chatgpt-icon.png")
 
@@ -70,12 +70,15 @@ with Diagram("Whisper and Chat API Architecture", show=False, direction = "LR"):
     # whisper_api >> chat_api
 
 
-    user >> Edge(label="Uploads audio file") >> streamlit_app
-    streamlit_app >> Edge(label="Triggers Adhoc Process") >> dag_adhoc
+    #user >> Edge(label="Uploads audio file") >> streamlit_app
+    streamlit_app >> Edge(label="Triggers Adhoc Process and Uploads audio file") >> dag_adhoc
     dag_adhoc >> Edge(label="Calls Whisper API to generate transcript") >> whisper_api
-    whisper_api >> Edge(label="Transcript file") >> audio_conversion
-    audio_conversion >> Edge(label="Processes transcript with ChatGPT API") >> chat_api
-    chat_api >> Edge(label="Answered questions file") >> audio_conversion
-    audio_conversion >> Edge(label="Stores files in S3") >> audio_files
-    dag_batch >> Edge(label="Runs every midnight") >> audio_conversion
-    chat_api << Edge(label="User asks a new question") << user
+    whisper_api  >> audio_conversion #>> Edge(label="Transcript file")
+    audio_conversion >> chat_api #>> Edge(label="Processes transcript with ChatGPT API") 
+    chat_api  >> audio_conversion  #>> Edge(label="Answered questions file")
+    #audio_conversion >> Edge(label="Stores files in S3") >> audio_files
+    #dag_batch >> Edge(label="Runs every midnight") >> audio_conversion
+    #chat_api << Edge(label="User asks a new question") << user
+    user >> Edge(label="User asks a new question") >> chat_api
+    audio_files >> Edge(label="transcribed file fetched from s3") >> chat_api
+    dag_batch >> Edge(label="Runs every midnight and Stores files in S3 ") >> audio_files
