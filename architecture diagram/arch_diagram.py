@@ -1,3 +1,4 @@
+from cProfile import label
 from diagrams import Diagram, Cluster, Edge
 from diagrams.aws.compute import EC2
 from diagrams.aws.database import RDS
@@ -40,45 +41,28 @@ with Diagram("Whisper and Chat API Architecture", show=False, direction = "LR"):
             streamlit_app = Custom("Streamlit", "./streamlit-icon.png")
 
         with Cluster("API"):
-            # with Cluster("Docker"):
-            #     whisper_api_docker = Docker("Whisper API")
-            #     chat_api_docker = Docker("Chat API")
             whisper_api = Custom("Whisper API", "./whisper-icon.png")
             chat_api = Custom("Chat API", "./chatgpt-icon.png")
 
 
         with Cluster("Storage"):
-            audio_files = S3("Audio Files")
+            s3 = S3("Audio Files")
 
 
     with Cluster("User"):
         user = User("User")
 
-    with Cluster("Machine"):
-        audio_conversion = Python("Audio Conversion")
-
-    # user >> streamlit_docker >> streamlit_app
-    # streamlit_app >> dag_adhoc >> airflow_docker
-    # dag_adhoc >> whisper_api_docker >> whisper_api >> audio_conversion >> audio_files
-    # # audio_conversion >> chat_api_docker >> chat_api >> message_queue
-    # dag_batch >> audio_conversion
-    # audio_files >> audio_conversion
-    # # audio_conversion >> db_instance
-    # # message_queue >> chat_api
-    # whisper_api >> audio_conversion
-    # streamlit_app >> whisper_api
-    # whisper_api >> chat_api
+    # with Cluster("Machine"):
+    #     audio_conversion = Python("Audio Conversion")
 
 
-    #user >> Edge(label="Uploads audio file") >> streamlit_app
-    streamlit_app >> Edge(label="Triggers Adhoc Process and Uploads audio file") >> dag_adhoc
-    dag_adhoc >> Edge(label="Calls Whisper API to generate transcript") >> whisper_api
-    whisper_api  >> audio_conversion #>> Edge(label="Transcript file")
-    audio_conversion >> chat_api #>> Edge(label="Processes transcript with ChatGPT API") 
-    chat_api  >> audio_conversion  #>> Edge(label="Answered questions file")
-    #audio_conversion >> Edge(label="Stores files in S3") >> audio_files
-    #dag_batch >> Edge(label="Runs every midnight") >> audio_conversion
-    #chat_api << Edge(label="User asks a new question") << user
-    user >> Edge(label="User asks a new question") >> chat_api
-    audio_files >> Edge(label="transcribed file fetched from s3") >> chat_api
-    dag_batch >> Edge(label="Runs every midnight and Stores files in S3 ") >> audio_files
+    user >> Edge(label = "Access Echonotes application") >> streamlit_app
+    user  >> chat_api #>> Edge(label = "User asks a new question")
+    s3 >> Edge(label = "Fetches general questionnaire file from S3") >> chat_api
+    # audio_conversion >> chat_api
+    streamlit_app >> Edge(label = "Triggers Adhoc Process and Uploads audio file") >> dag_adhoc
+    dag_adhoc >> Edge(label = "Calls Whisper API to generate transcript") >> whisper_api
+    # audio_conversion << whisper_api
+    # audio_conversion >> chat_api
+    #whisper_api >> Edge(label = "Store transcribed file to S3") >> s3
+    dag_batch >> Edge(label = "Runs every midnight and Stores files in S3") >> s3
